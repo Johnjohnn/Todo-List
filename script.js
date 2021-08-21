@@ -1,12 +1,17 @@
-const form = document.getElementById("form")
-const form = document.getElementById("inputs")
-const form = document.getElementById("todos")
+const form = document.getElementById('form')
+const input = document.getElementById('input')
+const todosUL = document.getElementById('todos')
 
+const todos = JSON.parse(localStorage.getItem('todos'))
 
-form.addEventListener("submit", (e) => {
+if(todos) {
+    todos.forEach(todo => addTodo(todo))
+}
+
+form.addEventListener('submit', (e) => {
     e.preventDefault()
-    
-    addTodo ()
+
+    addTodo()
 })
 
 function addTodo(todo) {
@@ -14,19 +19,47 @@ function addTodo(todo) {
 
     if(todo) {
         todoText = todo.text
-
     }
+
     if(todoText) {
-        const todoEl = document.createElement("li")
-        if(todo && todo.compleated) {
-            todoEl.classList.add("compleated")
+        const todoEl = document.createElement('li')
+        if(todo && todo.completed) {
+            todoEl.classList.add('completed')
         }
 
         todoEl.innerText = todoText
-        todoEl.addEventListener("click", () => todoEl.classList.toggle("completed"))
 
-        todosUl.appendChild(todoEl)
+        todoEl.addEventListener('click', () => {
+            todoEl.classList.toggle('completed')
+            updateLS()
+        }) 
 
-        input.value = ""
+        todoEl.addEventListener('contextmenu', (e) => {
+            e.preventDefault()
+
+            todoEl.remove()
+            updateLS()
+        }) 
+
+        todosUL.appendChild(todoEl)
+
+        input.value = ''
+
+        updateLS()
     }
+}
+
+function updateLS() {
+    todosEl = document.querySelectorAll('li')
+
+    const todos = []
+
+    todosEl.forEach(todoEl => {
+        todos.push({
+            text: todoEl.innerText,
+            completed: todoEl.classList.contains('completed')
+        })
+    })
+
+    localStorage.setItem('todos', JSON.stringify(todos))
 }
